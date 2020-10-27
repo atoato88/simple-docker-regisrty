@@ -1,3 +1,6 @@
+# Generate certs
+
+In this steps, create self-signed CA certificate and server certificate signed by the CA.
 
 ```
 # generate files for CA
