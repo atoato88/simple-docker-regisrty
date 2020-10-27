@@ -1,0 +1,28 @@
+version: '3'
+services:
+  auth:
+    image: cesanta/docker_auth
+    ports:
+      - 5001:5001
+    volumes:
+      - ./template/auth_config_non_tls.yml:/config:ro
+      - ./certs:/certs
+    command: /config
+    container_name: auth
+  registry:
+    restart: always
+    image: registry:2
+    ports:
+      - 5000:5000
+    environment:
+      REGISTRY_HTTP_ADDR: 0.0.0.0:5000
+      #REGISTRY_HTTP_TLS_CERTIFICATE: /certs/server.pem
+      #REGISTRY_HTTP_TLS_KEY: /certs/server-key.pem
+      REGISTRY_AUTH: token
+      REGISTRY_AUTH_TOKEN_REALM: http://localhost:5001/auth # you can connect with http not https if local mode.
+      REGISTRY_AUTH_TOKEN_SERVICE: Docker registry
+      REGISTRY_AUTH_TOKEN_ISSUER: Acme auth server
+      REGISTRY_AUTH_TOKEN_ROOTCERTBUNDLE: /certs/server.pem
+    volumes:
+      - ./data:/var/lib/registry
+      - ./certs:/certs
